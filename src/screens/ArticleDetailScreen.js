@@ -9,63 +9,85 @@ import { useDispatch, useSelector } from "react-redux"; // Redux hooks
 import { toggleFavorite } from "../redux/favoritesSlice"; // Redux action
 
 export default function ArticleDetailScreen(props) {
-  const article = props.route.params; // Article passed from previous screen
-
+  const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const article = props.route.params;
+
   const favoriteArticles = useSelector(
     (state) => state.favorites.favoriteArticles
   );
-  const isFavourite = favoriteArticles?.some(
-    (favArticle) => favArticle.idArticle === article.idArticle
-  ); // Check by idArticle
 
-  const navigation = useNavigation();
+  const isFavourite = favoriteArticles.some(
+    (item) => item.idArticle === article.idArticle
+  );
 
   const handleToggleFavorite = () => {
-    dispatch(toggleFavorite(article)); // Dispatch the article to favorites
+    dispatch(toggleFavorite(article));
   };
 
   return (
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
     >
-      {/* Article Image */}
-      <View style={styles.imageContainer} testID="imageContainer">
-         
+      <View
+        style={styles.imageContainer}
+        testID="imageContainer"
+      >
+        <Image
+          source={{ uri: article.thumbnail }}
+          style={styles.articleImage}
+        />
       </View>
 
-      {/* Back Button and Favorite Button */}
-                 
+      <View style={styles.topButtonsContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Text>Back</Text>
+        </TouchableOpacity>
 
-      {/* Article Description */}
-  
-        <View style={styles.contentContainer}>
-          {/* Title and Category */}
-          <View
-            style={styles.articleDetailsContainer}
-            testID="articleDetailsContainer"
-          >
-            <Text style={styles.articleTitle} testID="articleTitle">
-         
-             
-              
-              </Text>
-            <Text style={styles.articleCategory} testID="articleCategory">
-                         
-              </Text>
-          </View>
+        <TouchableOpacity
+          onPress={handleToggleFavorite}
+          style={[
+            styles.favoriteButton,
+            { backgroundColor: "white" },
+          ]}
+        >
+          <Text style={{ fontSize: 26 }}>
+            {isFavourite ? "♥" : "♡"}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-          {/* Description */}
-          <View
-            
-            style={styles.sectionContainer}
-            testID="sectionContainer"
-          >
-          
-          </View>
+      <View style={styles.contentContainer}>
+        <View testID="articleTitle">
+          <Text style={styles.articleTitle}>
+            {article.title}
+          </Text>
         </View>
+
+        <View testID="articleCategory">
+          <Text style={styles.articleCategory}>
+            {article.category}
+          </Text>
+        </View>
+
+        <View
+          style={styles.sectionContainer}
+          testID="sectionContainer"
+        >
+          <Text style={styles.sectionTitle}>
+            Description
+          </Text>
+
+          <Text style={styles.descriptionText}>
+            {article.description}
+          </Text>
+        </View>
+      </View>
     </ScrollView>
   );
 }
